@@ -861,7 +861,7 @@ function baseName() {
 function renderSaveBar() {
   const bar = $("#savebar"), inn = $("#saveIn");
   bar.classList.remove("hidden");
-  const keep = $("#outname") ? $("#outname").value : null;
+  const outKey = mode + "|" + (order[0] || ""), keep = ($("#outname") && $("#outname").dataset.k === outKey) ? $("#outname").value : null;  // đổi việc hoặc đổi file thì tên file kết quả tính lại theo file đầu vào
   const sel = items.filter(i => i.sel).length;
   const label = { cut: `💾 Lưu ${sel} trang đã chọn`, merge: `🔗 Nối ${order.length} file thành 1`, rotate: "💾 Lưu file đã xoay", edit: "💾 Lưu file đã chỉnh", compress: "📦 Nén nhỏ file", number: "🔢 Đánh số và lưu",
     images: imgInfo.tab === "in" ? `🖼 Lưu ${imgInfo.sel.size} ảnh` : `🖼 Chụp ${sel} trang thành ảnh`, clean: "🧹 Dọn và lưu", word: wordInfo.phase === "review" ? "💾 Lưu file Word" : "📝 Bắt đầu chuyển sang Word" }[mode];
@@ -871,7 +871,7 @@ function renderSaveBar() {
     ${mode === "cut" ? `<button class="btn" id="saveEach" title="Mỗi trang (đã chọn, hoặc tất cả nếu chưa chọn) thành một file riêng">📑 Tách mỗi trang 1 file</button>` : ""}
     <button class="btn primary" id="saveMain" ${disabled ? "disabled" : ""}>${label}</button>
     ${mode === "cut" && sel === 0 ? `<span class="hintline">Anh bấm chọn ít nhất 1 trang ở trên thì nút cam mới sáng lên.</span>` : ""}`;
-  $("#outname").value = keep || baseName();
+  $("#outname").value = keep || baseName(); $("#outname").dataset.k = outKey;
   $("#saveMain").onclick = () => save(false);
   if ($("#saveEach")) $("#saveEach").onclick = () => save(true);
 }
