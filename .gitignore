@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.env.*
+*.pdf
+*.docx
+PDF-ket-qua/
+token.txt
+running.json
+log.txt

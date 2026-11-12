@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teemo cùng PDF</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='56' r='34' fill='%23F3CDA6'/%3E%3Cpath d='M12 52C12 14 34 6 50 6s38 8 38 46z' fill='%236E7F3B'/%3E%3Cellipse cx='50' cy='52' rx='46' ry='9' fill='%2356652C'/%3E%3C/svg%3E">
+<style>
+:root{
+  --forest:#1F4D3A; --forest-d:#133226; --forest-dd:#0c2219; --cream:#F6EFD9; --cream-d:#EADFC0;
+  --leaf:#7DAA4F; --leaf-d:#5f8a38; --wood:#8B5E34; --orange:#E8943A; --orange-d:#d17f26;
+  --ink:#2b1d12; --muted:#6d5a43; --red:#C8372D;
+  --serif:"Constantia","Georgia",serif; --sans:"Candara","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:var(--sans);font-size:17px;color:var(--ink);background:linear-gradient(180deg,var(--forest-dd) 0%,var(--forest-d) 45%,var(--forest) 100%) fixed;min-height:100vh;overflow-x:hidden}
+h1,h2,h3{font-family:var(--serif);margin:0}
+button{font-family:inherit}
+.hidden{display:none !important}
+
+/* ---------- cảnh nền ---------- */
+#scene{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#scene .moon{position:absolute;top:6vh;right:9vw;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 38% 38%,#fffbe6,#f6efd9 55%,#e9deb4);box-shadow:0 0 60px 20px rgba(246,239,217,.25)}
+#scene svg.forest{position:absolute;left:0;right:0;bottom:0;width:100%;height:36vh;min-height:220px}
+#scene .star{position:absolute;width:3px;height:3px;border-radius:50%;background:#f6efd9;opacity:.7}
+.firefly{position:absolute;width:7px;height:7px;border-radius:50%;background:#ffe9a0;box-shadow:0 0 12px 5px rgba(255,233,160,.7);animation:float 9s ease-in-out infinite, blink 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0)}33%{transform:translate(28px,-34px)}66%{transform:translate(-22px,-14px)}}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+body.mode-work #scene svg.forest{height:18vh;min-height:110px;opacity:.55}
+body.mode-work #scene .moon{opacity:.22;top:5vh;right:3vw;width:70px;height:70px;box-shadow:none}
+@media (prefers-reduced-motion:reduce){.firefly{animation:none}}
+
+#app{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 22px 140px}
+.top{display:flex;align-items:center;gap:14px;padding:18px 0 6px;color:var(--cream)}
+.top .brand{display:flex;align-items:center;gap:12px}
+.top h1{font-size:25px;letter-spacing:.2px}
+.top .sub{font-size:14px;color:#cfe0c0;margin-top:2px}
+.back{margin-left:auto;background:transparent;border:2px solid #9fbf86;color:var(--cream);padding:9px 18px;border-radius:999px;font-size:16px;cursor:pointer}
+.back:hover{background:rgba(255,255,255,.1)}
+
+/* ---------- màn hình chính ---------- */
+.hero{display:flex;align-items:center;justify-content:center;gap:18px;padding:34px 0 14px;flex-wrap:wrap}
+.hero svg{width:150px;height:150px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.4))}
+.bubble{position:relative;background:var(--cream);color:var(--ink);border-radius:20px;padding:18px 24px;max-width:430px;font-size:19px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.bubble::before{content:"";position:absolute;left:-14px;top:42px;border:12px solid transparent;border-right-color:var(--cream);border-left:0}
+.bubble b{font-family:var(--serif);color:var(--forest)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(188px,1fr));gap:18px;margin-top:20px}
+.pick{background:var(--cream);border:0;border-radius:18px;padding:22px 20px 20px;text-align:left;cursor:pointer;border-bottom:6px solid var(--leaf);box-shadow:0 8px 22px rgba(0,0,0,.28);transition:transform .15s, box-shadow .15s;color:var(--ink)}
+.pick:hover:not(:disabled){transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.38)}
+.pick .ic{width:60px;height:60px;border-radius:50%;background:var(--forest);color:var(--cream);font-size:30px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.pick h3{font-size:22px;color:var(--forest)}
+.pick p{margin:6px 0 0;font-size:16px;color:var(--muted);line-height:1.35}
+.pick.c2{border-bottom-color:var(--orange)} .pick.c3{border-bottom-color:var(--wood)} .pick.c4{border-bottom-color:var(--red)} .pick.c0{border-bottom-color:#2b6cb0}
+.pick.c7{border-bottom-color:#3b7ea1} .pick.c8{border-bottom-color:#8a5a9a} .pick.c5{border-bottom-color:var(--leaf-d)} .pick.c6{border-bottom-color:#c9a227}
+.pick:disabled{opacity:.62;cursor:default;border-bottom-color:#b9b09a}
+.pick .soon{display:inline-block;margin-top:8px;background:var(--cream-d);color:var(--muted);font-size:13px;padding:2px 10px;border-radius:999px}
+.footnote{text-align:center;color:#a9c79a;font-size:14px;margin-top:26px}
+
+/* ---------- màn hình làm việc ---------- */
+.steps{display:flex;gap:10px;margin:18px 0 6px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:9px;padding:7px 16px 7px 8px;border-radius:999px;background:rgba(255,255,255,.1);color:#cfe0c0;font-size:16px}
+.step i{font-style:normal;width:28px;height:28px;border-radius:50%;background:#456b57;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+.step.on{background:var(--cream);color:var(--forest);font-weight:700}
+.step.on i{background:var(--orange);color:var(--ink)}
+.step.done i{background:var(--leaf);color:#fff}
+.guide{display:flex;align-items:center;gap:14px;margin:12px 0 14px}
+.guide svg{width:86px;height:86px;flex:none;filter:drop-shadow(0 5px 9px rgba(0,0,0,.4))}
+.guide .bubble{font-size:19px;padding:14px 20px}
+.guide .bubble::before{top:30px}
+.panel{background:var(--cream);border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.drop{border:3px dashed var(--wood);border-radius:16px;background:#fbf6e6;padding:48px 20px;text-align:center;cursor:pointer;color:var(--forest)}
+.drop:hover,.drop.over{background:#f1e8c9;border-color:var(--orange)}
+.drop .big{font-size:52px;line-height:1}
+.drop h2{font-size:25px;margin:10px 0 4px}
+.drop p{margin:0;color:var(--muted);font-size:16px}
+.btn{font-size:17px;border:2px solid var(--wood);background:var(--cream);color:var(--ink);padding:10px 18px;border-radius:12px;cursor:pointer;transition:background .12s}
+.btn:hover:not(:disabled){background:var(--cream-d)}
+.btn.green{background:var(--leaf);border-color:var(--leaf-d);color:#fff;font-weight:700}
+.btn.green:hover:not(:disabled){background:var(--leaf-d)}
+.btn.primary{background:var(--orange);border-color:var(--orange-d);color:var(--ink);font-weight:700;font-size:19px;padding:13px 28px;font-family:var(--serif);box-shadow:0 4px 0 var(--orange-d)}
+.btn.primary:hover:not(:disabled){background:#f0a04b}
+.btn.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 var(--orange-d)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.sm{font-size:15px;padding:6px 11px;border-radius:9px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.tools .info{margin-left:auto;color:var(--muted);font-size:16px}
+input[type=text]{font:inherit;font-size:17px;padding:10px 12px;border:2px solid var(--wood);border-radius:10px;background:#fffdf4;color:var(--ink)}
+
+/* lưới trang */
+.grid{display:flex;flex-wrap:wrap;gap:18px}
+.card{position:relative;width:176px;background:#fffdf4;border:3px solid var(--cream-d);border-radius:14px;padding:8px;user-select:none}
+.card.pickable{cursor:pointer}
+.card.pickable:hover{border-color:var(--leaf)}
+.card.sel{border-color:var(--leaf-d);background:#eef6e2;box-shadow:0 0 0 3px rgba(125,170,79,.35)}
+.tw{position:relative;width:100%;height:230px;background:#e7dcc0;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.tw img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;object-fit:contain}
+.badge{position:absolute;left:6px;top:6px;background:var(--forest);color:var(--cream);font-weight:700;font-size:14px;border-radius:12px;padding:1px 10px}
+.check{position:absolute;right:6px;top:6px;width:30px;height:30px;border-radius:50%;background:var(--leaf-d);color:#fff;display:none;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+.card.sel .check{display:flex}
+.zoom{position:absolute;right:6px;bottom:6px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(43,29,18,.8);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.zoom:hover{background:var(--forest)}
+.acts{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.acts .btn{flex:1;padding:6px 4px;font-size:16px}
+.rotmark{position:absolute;left:6px;bottom:6px;background:var(--orange);color:var(--ink);font-size:13px;font-weight:700;border-radius:10px;padding:1px 8px}
+.cap{font-size:13px;color:var(--muted);margin-top:6px;text-align:center}
+.cap.k{margin-top:4px}
+
+/* danh sách file (nối) */
+.rows{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;align-items:center;gap:16px;background:#fffdf4;border:3px solid var(--cream-d);border-radius:14px;padding:10px 14px}
+.row .n{width:34px;height:34px;border-radius:50%;background:var(--forest);color:var(--cream);font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.row .th{width:70px;flex:none;background:#e7dcc0;border-radius:5px;overflow:hidden}
+.row .th img{width:100%;display:block}
+.row .nm{flex:1;min-width:0}
+.row .nm b{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .nm span{color:var(--muted);font-size:15px}
+.row .go{display:flex;gap:6px}
+
+/* thanh lưu */
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--cream);border-top:4px solid var(--wood);box-shadow:0 -8px 24px rgba(0,0,0,.3);padding:14px 22px}
+.savebar .in{max-width:1080px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.savebar label{font-size:15px;color:var(--muted)}
+#outname{width:min(280px,100%)}
+.savebar .grow{flex:1}
+.savebar .hintline{font-size:14px;color:var(--muted);flex-basis:100%}
+
+/* xong */
+.done{text-align:center;padding:30px 10px}
+.done svg{width:130px;height:130px}
+.done h2{font-size:34px;color:var(--forest);margin:8px 0}
+.done ul{list-style:none;padding:0;margin:14px auto;max-width:560px;text-align:left}
+.done li{background:#fffdf4;border:2px solid var(--cream-d);border-radius:10px;padding:9px 14px;margin:6px 0;font-size:17px}
+.done .row2{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{text-align:left;background:#fffdf4;border:3px solid var(--cream-d);border-radius:14px;padding:14px 18px;cursor:pointer;color:var(--ink);font-family:inherit}
+.opt:hover{border-color:var(--leaf)}
+.opt.on{border-color:var(--leaf-d);background:#eef6e2;box-shadow:0 0 0 3px rgba(125,170,79,.35)}
+.opt h3{font-size:21px;color:var(--forest)}
+.opt h3 em{font-style:normal;font-family:var(--sans);font-size:13px;background:var(--orange);color:var(--ink);padding:2px 10px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.opt p{margin:5px 0 0;color:var(--muted);font-size:16px}
+.numwrap{display:flex;gap:26px;flex-wrap:wrap}
+.numopts{flex:1;min-width:300px}
+.numprev{flex:0 0 330px}
+.lab{font-family:var(--serif);color:var(--forest);font-weight:700;font-size:18px;margin:16px 0 8px}
+.numopts .lab:first-child,.numprev .lab:first-child{margin-top:0}
+.posgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:400px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:inherit;font-size:16px;border:2px solid var(--wood);background:#fffdf4;color:var(--ink);padding:9px 14px;border-radius:10px;cursor:pointer}
+.chip:hover{background:var(--cream-d)}
+.chip.on{background:var(--leaf-d);border-color:var(--leaf-d);color:#fff;font-weight:700}
+.two{display:flex;gap:18px;flex-wrap:wrap}
+.two label{display:flex;flex-direction:column;gap:5px;font-size:15px;color:var(--muted)}
+.two input{width:110px}
+.help{margin-top:10px;font-size:15px;color:var(--muted)}
+.prevbox{position:relative;width:100%;background:#e7dcc0;border-radius:8px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.prevbox img{width:100%;display:block}
+.prevbox span{position:absolute;color:#b3261e;font-family:Arial,sans-serif;font-weight:700;background:rgba(255,255,255,.55);padding:0 3px;border-radius:3px;white-space:nowrap}
+.teemo-say{font-size:18px;color:var(--wood);margin-bottom:6px}
+.bigsave{font-family:var(--serif);font-size:28px;color:var(--ink);margin:10px 0 14px}
+.bigsave span{color:var(--orange)} .bigsave b{color:var(--forest)}
+.bigsave em{display:inline-block;font-style:normal;font-family:var(--sans);font-size:17px;background:var(--leaf-d);color:#fff;padding:3px 14px;border-radius:999px;margin-left:10px;vertical-align:middle}
+
+.seg{display:flex;gap:10px;flex-wrap:wrap}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:16px;color:var(--muted)}
+.chk input[type=checkbox]{width:20px;height:20px;accent-color:var(--leaf-d)}
+.lab2{font-size:16px;color:var(--muted);margin-left:8px}
+.checker{background:conic-gradient(#d9d0b4 25%,#efe8d2 0 50%,#d9d0b4 0 75%,#efe8d2 0) 0 0/16px 16px}
+.empty-note{background:#fffdf4;border:2px dashed var(--cream-d);border-radius:12px;padding:26px;color:var(--muted);font-size:18px;max-width:640px}
+.sec{background:#fffdf4;border:3px solid var(--cream-d);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.sec h3{font-size:21px;color:var(--forest);margin-bottom:10px}
+.sec h3 em{font-style:normal;font-family:var(--sans);font-size:14px;background:var(--forest);color:var(--cream);padding:2px 11px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.none{margin:4px 0;color:var(--muted);font-size:16px}
+.wmrow{display:flex;align-items:center;gap:12px;padding:9px 4px;border-top:1px solid var(--cream-d);font-size:17px;cursor:pointer}
+.wmrow:first-of-type{border-top:0}
+.wmrow input{width:22px;height:22px;accent-color:var(--leaf-d);flex:none}
+.wmth{width:62px;height:62px;object-fit:contain;border-radius:6px;flex:none}
+.cmp{position:fixed;inset:0;background:rgba(8,20,14,.9);z-index:65;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:16px;cursor:pointer}
+.cmpin{display:flex;gap:18px;max-height:84vh}
+.cmpin>div{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.cmpin img{max-height:76vh;max-width:44vw;background:#fff;border-radius:6px}
+.cmp .mcap{color:var(--cream);font-size:17px}
+
+/* hộp thoại */
+.toast{position:fixed;left:50%;top:22vh;transform:translateX(-50%);z-index:70;background:var(--cream);border-radius:16px;border-top:6px solid var(--orange);box-shadow:0 14px 44px rgba(0,0,0,.45);padding:20px 26px;min-width:320px;max-width:min(560px,92vw);display:none}
+.toast.err{border-top-color:var(--red)}
+.toast h3{font-size:21px;margin-bottom:8px;color:var(--forest)}
+.toast ul{margin:6px 0 12px;padding-left:20px;font-size:16px}
+.toast .row3{display:flex;gap:10px;justify-content:flex-end}
+.prog{height:10px;background:var(--cream-d);border-radius:6px;overflow:hidden;margin-top:10px}
+.prog i{display:block;height:100%;background:var(--leaf);width:0;transition:width .2s}
+.modal{position:fixed;inset:0;background:rgba(8,20,14,.86);z-index:60;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px}
+.modal img{max-width:92vw;max-height:82vh;background:#fff;border-radius:6px}
+.modal .mcap{color:var(--cream);font-size:16px}
+.veil{position:fixed;inset:0;background:rgba(125,170,79,.22);border:5px dashed var(--leaf);z-index:50;display:none;align-items:center;justify-content:center;font-family:var(--serif);font-size:32px;color:#fff;pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+body.dragfile .veil{display:flex}
+.banner{background:var(--red);color:#fff;text-align:center;padding:10px;display:none;position:relative;z-index:80}
+
+/* ---------- Chuyển sang Word + soát lỗi ---------- */
+body.wide #app{max-width:1500px}
+.wnote{background:#fffdf4;border:2px dashed var(--wood);border-radius:14px;padding:16px 20px;margin-top:16px;line-height:1.55}
+.wnote b{color:var(--forest)}
+.wprog{padding:26px 6px 10px;text-align:center}
+.wprog h3{font-size:24px;margin-bottom:6px}
+.wprog .prog{height:16px;max-width:560px;margin:14px auto 8px}
+.wprog .sm{color:var(--muted);font-size:15px}
+.rvhead{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:12px}
+.rvhead .pg{font-weight:700;min-width:110px;text-align:center}
+.rvhead .info{color:var(--muted);margin-left:auto}
+.rvwrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.rvwrap{grid-template-columns:1fr}}
+.rvimg,.rvlist{max-height:74vh;overflow:auto;border:2px solid var(--wood);border-radius:12px;background:#fffdf4}
+.rvimg{padding:8px;background:#e4dcc4;position:relative}
+.rvpage{position:relative;width:100%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.rvpage img{display:block;width:100%;height:100%}
+.rvbox{position:absolute;border:1.5px solid rgba(139,94,52,.28);border-radius:3px;cursor:pointer}
+.rvbox.bad{background:rgba(255,226,60,.42);border-color:#d9b400}
+.rvbox.edited{background:rgba(125,170,79,.35);border-color:var(--leaf-d)}
+.rvbox.act{outline:3px solid var(--orange);background:rgba(232,148,58,.28);z-index:2}
+.rvlist{padding:10px}
+.rvrow{padding:8px 10px;border-radius:10px;margin-bottom:6px;border:2px solid transparent}
+.rvrow.bad{background:#fff3b0;border-color:#e6c200}
+.rvrow.edited{background:#e4f1d4;border-color:var(--leaf)}
+.rvrow.act{border-color:var(--orange)}
+.rvrow textarea{width:100%;font:inherit;font-size:17px;border:1px solid #cdbd98;border-radius:8px;padding:6px 8px;resize:vertical;background:#fff;color:var(--ink)}
+.rvrow .why{font-size:14px;color:var(--muted);margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rvrow .why b{background:#ffe96b;padding:0 5px;border-radius:4px;color:var(--ink)}
+.rvrow .okb{margin-left:auto;font-size:14px;padding:3px 10px;border-radius:8px;border:1.5px solid var(--leaf-d);background:#fff;color:var(--leaf-d);cursor:pointer}
+</style>
+</head>
+<body class="mode-home">
+
+<!-- hình minh họa dùng lại nhiều nơi (tự vẽ, phong cách trinh sát rừng) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="scout" viewBox="0 0 120 120">
+      <path d="M26 92 Q60 114 94 92 L99 105 Q60 128 21 105 Z" fill="#C8372D"/>
+      <path d="M70 100 L82 122 L92 118 L80 98 Z" fill="#a82a22"/>
+      <circle cx="60" cy="68" r="33" fill="#F3CDA6"/>
+      <circle cx="27" cy="70" r="7.5" fill="#F3CDA6"/><circle cx="93" cy="70" r="7.5" fill="#F3CDA6"/>
+      <path d="M17 58 C17 22 39 11 60 11 C81 11 103 22 103 58 Z" fill="#6E7F3B"/>
+      <path d="M17 58 C17 22 39 11 60 11 C81 11 103 22 103 58" fill="none" stroke="#56652C" stroke-width="3"/>
+      <path d="M18 47 H102 V55 H18 Z" fill="#F6EFD9"/>
+      <ellipse cx="60" cy="58" rx="50" ry="9" fill="#56652C"/>
+      <circle cx="43" cy="32" r="11.5" fill="#8B5E34"/><circle cx="43" cy="32" r="8" fill="#BFE3E8"/><circle cx="40.4" cy="29.4" r="2.5" fill="#fff"/>
+      <circle cx="77" cy="32" r="11.5" fill="#8B5E34"/><circle cx="77" cy="32" r="8" fill="#BFE3E8"/><circle cx="74.4" cy="29.4" r="2.5" fill="#fff"/>
+      <rect x="51" y="29" width="18" height="6" rx="3" fill="#8B5E34"/>
+      <ellipse cx="47" cy="73" rx="5" ry="6.5" fill="#2b1d12"/><ellipse cx="73" cy="73" rx="5" ry="6.5" fill="#2b1d12"/>
+      <circle cx="48.9" cy="70.7" r="1.9" fill="#fff"/><circle cx="74.9" cy="70.7" r="1.9" fill="#fff"/>
+      <ellipse cx="36.5" cy="83" rx="5.5" ry="3.4" fill="#F08F7B" opacity=".75"/><ellipse cx="83.5" cy="83" rx="5.5" ry="3.4" fill="#F08F7B" opacity=".75"/>
+      <path d="M50 85 Q60 95 70 85" fill="none" stroke="#2b1d12" stroke-width="3" stroke-linecap="round"/>
+      <g transform="translate(78 4)"><path d="M0 14 C0 1 26 1 26 14 Z" fill="#D9552B"/><circle cx="7" cy="9" r="2.2" fill="#F6EFD9"/><circle cx="17" cy="7" r="2.2" fill="#F6EFD9"/><rect x="9.5" y="13" width="7" height="8" rx="2.5" fill="#F6EFD9"/></g>
+    </symbol>
+    <symbol id="shroom" viewBox="0 0 60 60">
+      <rect x="22" y="30" width="16" height="26" rx="7" fill="#F6EFD9"/>
+      <path d="M4 34 C4 8 56 8 56 34 Z" fill="#D9552B"/>
+      <circle cx="18" cy="24" r="4" fill="#F6EFD9"/><circle cx="36" cy="18" r="3.4" fill="#F6EFD9"/><circle cx="46" cy="27" r="3" fill="#F6EFD9"/>
+    </symbol>
+    <symbol id="pine" viewBox="0 0 64 120">
+      <path d="M32 0 L52 38 H40 L58 70 H44 L64 104 H0 L20 70 H6 L24 38 H12 Z"/>
+      <rect x="27" y="102" width="10" height="18"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="scene">
+  <div class="moon"></div>
+  <svg class="forest" id="forest" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
+</div>
+
+<div class="banner" id="banner">App đã tắt. Anh bấm đúp file Mo-Teemo-cung-PDF.bat để mở lại (các thay đổi chưa lưu sẽ mất).</div>
+
+<div id="app">
+  <div class="top">
+    <div class="brand">
+      <svg width="54" height="54"><use href="#scout"/></svg>
+      <div><h1>Teemo cùng PDF</h1><div class="sub">Trinh sát PDF: cắt · nối · xoay · nén · đánh số trang. File chỉ nằm trên máy anh.</div></div>
+    </div>
+    <button class="back hidden" id="homeBtn">← Về trang chính</button>
+  </div>
+
+  <!-- ===== màn hình chính ===== -->
+  <section id="home">
+    <div class="hero">
+      <svg><use href="#scout"/></svg>
+      <div class="bubble">Chào anh! <b>Teemo</b> sẵn sàng rồi. Hôm nay mình làm gì với file PDF? Anh bấm vào một ô bên dưới nhé.</div>
+    </div>
+    <div class="cards">
+      <button class="pick c0" data-mode="word"><div class="ic">📝</div><h3>Chuyển sang Word</h3><p>Chữ sửa được, bảng dựng lại thật. Có màn soát lỗi hai bên.</p></button>
+      <button class="pick" data-mode="cut"><div class="ic">✂</div><h3>Cắt PDF</h3><p>Giữ lại vài trang từ một file, hoặc tách mỗi trang thành file riêng.</p></button>
+      <button class="pick c2" data-mode="merge"><div class="ic">🔗</div><h3>Nối PDF</h3><p>Gộp nhiều file thành một file duy nhất.</p></button>
+      <button class="pick c3" data-mode="rotate"><div class="ic">↻</div><h3>Xoay PDF</h3><p>Xoay trang bị ngược hoặc nằm ngang.</p></button>
+      <button class="pick c4" data-mode="edit"><div class="ic">🗂</div><h3>Xóa &amp; đổi chỗ trang</h3><p>Bỏ trang thừa, dời trang lên trước hoặc xuống sau.</p></button>
+      <button class="pick c5" data-mode="compress"><div class="ic">📦</div><h3>Nén nhỏ file</h3><p>File nặng thành nhẹ, gửi email và Zalo dễ hơn.</p></button>
+      <button class="pick c6" data-mode="number"><div class="ic">🔢</div><h3>Đánh số trang</h3><p>Thêm số trang ở chân hoặc đầu mỗi trang.</p></button>
+      <button class="pick c7" data-mode="images"><div class="ic">🖼</div><h3>Rút ảnh ra</h3><p>Lấy hình nằm trong file PDF, hoặc chụp cả trang thành ảnh.</p></button>
+      <button class="pick c8" data-mode="clean"><div class="ic">🧹</div><h3>Xóa ghi chú &amp; hình mờ</h3><p>Gỡ nét tô sáng, ghi chú, chữ mờ, logo in chìm.</p></button>
+    </div>
+    <div class="footnote">Mọi thứ chạy trên máy anh. File gốc không bao giờ bị sửa, kết quả lưu ở thư mục PDF-ket-qua trên Desktop.</div>
+  </section>
+
+  <!-- ===== màn hình làm việc ===== -->
+  <section id="work" class="hidden">
+    <div class="steps" id="steps"></div>
+    <div class="guide"><svg><use href="#scout"/></svg><div class="bubble" id="say"></div></div>
+    <div class="panel" id="panel"></div>
+  </section>
+
+  <!-- ===== xong ===== -->
+  <section id="doneSec" class="hidden"><div class="panel done" id="donePanel"></div></section>
+</div>
+
+<div class="savebar hidden" id="savebar"><div class="in" id="saveIn"></div></div>
+<input type="file" id="fileInput" accept=".pdf,application/pdf" hidden>
+<div class="toast" id="toast"></div>
+<div class="veil">Thả file PDF vào đây</div>
+<div class="modal" id="modal"><img id="mimg" alt=""><div class="mcap" id="mcap"></div></div>
+
+<script>
+const TOKEN = "__TOKEN__";
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- cảnh nền: rừng đêm + đom đóm (vẽ bằng mã) ---------- */
+(function scene() {
+  const f = $("#forest");
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const layer = (fill, n, y0, hMin, hMax, op) => {
+    let g = `<g fill="${fill}" opacity="${op}">`;
+    for (let i = 0; i < n; i++) {
+      const h = hMin + rnd() * (hMax - hMin), w = h * 0.54, x = (i / n) * 1500 - 40 + rnd() * 40;
+      g += `<use href="#pine" x="${x.toFixed(0)}" y="${(y0 - h).toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}"/>`;
+    }
+    return g + "</g>";
+  };
+  f.innerHTML = layer("#173d2d", 26, 330, 150, 250, 1) + layer("#0f2b20", 22, 340, 120, 210, 1) +
+    `<rect x="0" y="296" width="1440" height="40" fill="#0a1d15"/>`;
+  const sc = $("#scene");
+  for (let i = 0; i < 30; i++) { const s = document.createElement("i"); s.className = "star"; s.style.left = rnd() * 100 + "%"; s.style.top = rnd() * 50 + "%"; s.style.opacity = 0.3 + rnd() * 0.6; sc.appendChild(s); }
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement("i"); s.className = "firefly";
+    s.style.left = 4 + rnd() * 92 + "%"; s.style.top = 40 + rnd() * 50 + "%";
+    s.style.animationDelay = (rnd() * 6).toFixed(1) + "s," + (rnd() * 3).toFixed(1) + "s";
+    s.style.animationDuration = (7 + rnd() * 6).toFixed(1) + "s," + (2 + rnd() * 3).toFixed(1) + "s";
+    sc.appendChild(s);
+  }
+  // nấm ở góc
+  const m = (l, r, sz, bottom) => `<svg style="position:absolute;${l ? "left:" + l : "right:" + r};bottom:${bottom};width:${sz}px;height:${sz}px"><use href="#shroom"/></svg>`;
+  sc.insertAdjacentHTML("beforeend", m("3vw", 0, 84, "1.5vh") + m("8vw", 0, 54, "0.5vh") + m(0, "4vw", 92, "1vh") + m(0, "10vw", 50, "0vh"));
+})();
+
+/* ---------- gọi máy chủ ---------- */
+function api(path, opts = {}) {
+  opts.headers = Object.assign({ "X-Token": TOKEN }, opts.headers || {});
+  return fetch(path, opts).then(async r => {
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || ("Lỗi " + r.status));
+    return j;
+  });
+}
+const post = (p, body) => api(p, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+
+/* ---------- trạng thái ---------- */
+const MODES = {
+  cut:    { name: "Cắt PDF", single: true,  suffix: "_cat",     s1: "Thả MỘT file PDF cần cắt vào ô bên dưới nhé.", s2: "Bấm vào những trang anh muốn <b>GIỮ LẠI</b> (trang được chọn có dấu ✓ xanh). Xong thì bấm nút cam ở dưới." },
+  merge:  { name: "Nối PDF", single: false, suffix: "_noi",     s1: "Thả các file cần nối vào ô bên dưới. Thả được nhiều file cùng lúc.", s2: "Đổi thứ tự bằng mũi tên <b>▲ ▼</b>. Xong thì bấm nút cam <b>Nối</b> ở dưới." },
+  rotate: { name: "Xoay PDF", single: true,  suffix: "_xoay",    s1: "Thả MỘT file PDF cần xoay vào ô bên dưới nhé.", s2: "Bấm <b>↺ ↻</b> dưới từng trang, hoặc xoay <b>cả file</b> bằng hai nút xanh lớn." },
+  compress: { name: "Nén nhỏ file", single: true, suffix: "_nen", s1: "Thả MỘT file PDF cần nén nhỏ vào ô bên dưới nhé.", s2: "Chọn mức nén. Anh cứ chọn <b>Vừa</b> là hợp nhất cho hầu hết file. Xong thì bấm nút cam." },
+  number: { name: "Đánh số trang", single: true, suffix: "_danhso", s1: "Thả MỘT file PDF cần đánh số trang vào ô bên dưới nhé.", s2: "Chọn chỗ đặt số và kiểu số. Ảnh trang bên phải là bản xem trước, anh chỉnh tới khi ưng thì bấm nút cam." },
+  images: { name: "Rút ảnh ra", single: true, suffix: "_anh", s1: "Thả MỘT file PDF cần lấy ảnh vào ô bên dưới nhé.", s2: "Bấm vào những hình anh muốn lấy (viền xanh có dấu ✓ là được chọn). Muốn lấy cả biểu đồ vẽ nét thì chọn <b>Chụp cả trang thành ảnh</b>." },
+  clean: { name: "Xóa ghi chú & hình mờ", single: true, suffix: "_sach", s1: "Thả MỘT file PDF cần dọn vào ô bên dưới nhé.", s2: "Teemo đã soi file xong. Anh tick những thứ muốn gỡ, bấm <b>Xem thử</b> để thấy trang sau khi dọn, ưng thì bấm nút cam. File gốc vẫn giữ nguyên." },
+  word: { name: "Chuyển sang Word", single: true, suffix: "_word", s1: "Thả MỘT file PDF cần chuyển sang Word vào ô bên dưới nhé. File quét hay file có chữ thật đều được.", s2: "" },
+  edit:   { name: "Xóa & đổi chỗ trang", single: true, suffix: "_sapxep", s1: "Thả MỘT file PDF vào ô bên dưới nhé.", s2: "Bấm <b>✕</b> để bỏ trang, <b>◀ ▶</b> để dời trang. Làm sai thì bấm <b>Hoàn tác</b>." },
+};
+let mode = null, view = "home";
+let files = {}, order = [], items = [], history = [], uidc = 0;
+const opt = { level: "vua", pos: "bc", style: "n", start: 1, from: 1, size: 11 };
+const fmtSize = n => n < 1048576 ? Math.max(1, Math.round(n / 1024)) + " KB" : (n / 1048576).toFixed(1) + " MB";
+
+function showView(v) {
+  view = v;
+  $("#home").classList.toggle("hidden", v !== "home");
+  $("#work").classList.toggle("hidden", v !== "work");
+  $("#doneSec").classList.toggle("hidden", v !== "done");
+  $("#homeBtn").classList.toggle("hidden", v === "home");
+  document.body.className = v === "home" ? "mode-home" : "mode-work";
+  if (v !== "work") $("#savebar").classList.add("hidden");
+  window.scrollTo(0, 0);
+}
+function enter(m) { mode = m; files = {}; order = []; items = []; history = []; imgInfo = freshImg(); cleanInfo = null; wordInfo = freshWord(); showView("work"); render(); }
+function goHome() { mode = null; showView("home"); }
+document.querySelectorAll(".pick[data-mode]").forEach(b => b.onclick = () => enter(b.dataset.mode));
+$("#homeBtn").onclick = () => { if (view === "work" && items.length && !confirm("Về trang chính? Những thay đổi chưa lưu sẽ mất.")) return; goHome(); };
+
+const snap = () => { history.push(JSON.stringify({ items, order })); if (history.length > 50) history.shift(); };
+function undo() { if (!history.length) return; const h = JSON.parse(history.pop()); items = h.items; order = h.order; render(); }
+
+/* ---------- nạp file ---------- */
+function uploadOne(f, progress) {
+  return new Promise((resolve, reject) => {
+    const x = new XMLHttpRequest();
+    x.open("POST", "/api/upload?name=" + encodeURIComponent(f.name));
+    x.setRequestHeader("X-Token", TOKEN);
+    x.upload.onprogress = e => { if (e.lengthComputable) progress(Math.round(e.loaded * 100 / e.total)); };
+    x.onload = () => { let j = {}; try { j = JSON.parse(x.responseText); } catch (e) {} x.status === 200 ? resolve(j) : reject(new Error(j.error || ("Lỗi " + x.status))); };
+    x.onerror = () => reject(new Error("Không kết nối được với app."));
+    x.send(f);
+  });
+}
+async function addFiles(list) {
+  if (view !== "work") return;
+  let arr = [...list].filter(f => /\.pdf$/i.test(f.name) || f.type === "application/pdf");
+  if (!arr.length) { dialog("Chỉ nhận file PDF", ["Anh chọn lại file có đuôi .pdf nhé."], true); return; }
+  const cfg = MODES[mode], errs = [];
+  if (cfg.single) {
+    if (arr.length > 1) errs.push("Việc này làm với 1 file một lúc, em lấy file đầu tiên: " + arr[0].name);
+    arr = [arr[0]]; files = {}; order = []; items = []; history = []; imgInfo = freshImg(); cleanInfo = null; wordInfo = freshWord();
+  }
+  for (let k = 0; k < arr.length; k++) {
+    const f = arr[k];
+    busy(`Đang nạp ${k + 1}/${arr.length}: ${f.name}`, 0);
+    try {
+      const info = await uploadOne(f, p => busy(`Đang nạp ${k + 1}/${arr.length}: ${f.name}`, p));
+      files[info.id] = info; order.push(info.id);
+      for (let p = 0; p < info.pages; p++) items.push({ uid: ++uidc, file: info.id, page: p, rot: 0, sel: false });
+    } catch (e) { errs.push(f.name + ": " + e.message); }
+  }
+  if (items.length && (mode === "images" || mode === "clean")) {
+    busy("Teemo đang soi file…", 50);
+    try { if (mode === "images") await loadImages(); else await loadClean(); } catch (e) { errs.push(e.message); }
+  }
+  hideDialog();
+  render();
+  if (errs.length) dialog("Lưu ý", errs, true);
+}
+
+/* ---------- vẽ màn hình làm việc ---------- */
+const thumb = (it, w) => `/api/thumb/${it.file}/${it.page}?w=${w}&r=${it.rot}&t=${TOKEN}`;
+function ratio(it) { let [w, h] = files[it.file].sizes[it.page]; if (it.rot % 180) [w, h] = [h, w]; return `${w}/${h}`; }
+function stepsHtml(cur) {
+  const names = ["Chọn file", mode === "cut" ? "Chọn trang" : mode === "merge" ? "Sắp thứ tự" : mode === "rotate" ? "Xoay trang" : mode === "compress" ? "Chọn mức nén" : mode === "number" ? "Chọn kiểu số" : mode === "images" ? "Chọn hình" : mode === "clean" ? "Chọn thứ cần gỡ" : mode === "word" ? "Chuyển chữ" : "Chỉnh trang", mode === "word" ? "Soát lỗi rồi lưu" : "Lưu"];
+  return names.map((n, i) => `<div class="step ${i + 1 === cur ? "on" : i + 1 < cur ? "done" : ""}"><i>${i + 1 < cur ? "✓" : i + 1}</i>${n}</div>`).join("");
+}
+function render() {
+  if (view !== "work") return;
+  const cfg = MODES[mode], has = items.length > 0;
+  $("#steps").innerHTML = stepsHtml(has ? (mode === "word" && wordInfo.phase === "review" ? 3 : 2) : 1);
+  $("#say").innerHTML = has ? (mode === "word" ? wordSay() : cfg.s2) : cfg.s1;
+  document.body.classList.toggle("wide", mode === "word" && has && wordInfo.phase === "review" && wordInfo.kind === "scan");
+  const panel = $("#panel");
+  if (!has) {
+    panel.innerHTML = `<div class="drop" id="drop"><div class="big">📂</div><h2>Kéo file PDF thả vào đây, hoặc bấm để chọn</h2><p>${cfg.single ? "Chọn 1 file." : "Chọn được nhiều file."}</p></div>`;
+    const d = $("#drop"); d.onclick = () => pickFile();
+    $("#savebar").classList.add("hidden");
+    return;
+  }
+  if (mode === "merge") renderMerge(panel); else if (mode === "compress") renderCompress(panel); else if (mode === "number") renderNumber(panel); else if (mode === "images") renderImages(panel); else if (mode === "clean") renderClean(panel); else if (mode === "word") renderWord(panel); else renderPages(panel);
+  renderSaveBar();
+}
+function pickFile() { const fi = $("#fileInput"); fi.multiple = !MODES[mode].single; fi.click(); }
+
+function renderPages(panel) {
+  const sel = items.filter(i => i.sel).length;
+  let tools = "";
+  if (mode === "cut") tools = `<button class="btn" id="tAll">Chọn tất cả</button><button class="btn" id="tNone">Bỏ chọn</button>
+      <input type="text" id="rangeIn" placeholder="hoặc gõ số: 1-3, 5" size="16"><button class="btn" id="tRange">Chọn</button>`;
+  if (mode === "rotate") tools = `<button class="btn green" id="rAllL">↺ Xoay cả file sang trái</button><button class="btn green" id="rAllR">↻ Xoay cả file sang phải</button>`;
+  if (mode === "edit") tools = `<button class="btn" id="tUndo" ${history.length ? "" : "disabled"}>↶ Hoàn tác</button>`;
+  tools += `<button class="btn" id="tOther">＋ Chọn file khác</button><span class="info">${items.length} trang${mode === "cut" ? " · đã chọn " + sel : ""}</span>`;
+  panel.innerHTML = `<div class="tools">${tools}</div><div class="grid" id="grid"></div>`;
+  const grid = $("#grid");
+  items.forEach((it, idx) => {
+    const d = document.createElement("div");
+    d.className = "card" + (mode === "cut" ? " pickable" : "") + (it.sel ? " sel" : "");
+    let acts = "";
+    if (mode === "rotate") acts = `<div class="acts"><button class="btn sm" data-a="l" title="Xoay trái">↺</button><button class="btn sm" data-a="r" title="Xoay phải">↻</button></div>`;
+    if (mode === "edit") acts = `<div class="acts"><button class="btn sm" data-a="back" title="Dời lên trước" ${idx === 0 ? "disabled" : ""}>◀</button><button class="btn sm" data-a="del" title="Bỏ trang này">✕</button><button class="btn sm" data-a="fwd" title="Dời về sau" ${idx === items.length - 1 ? "disabled" : ""}>▶</button></div>`;
+    d.innerHTML = `<div class="tw"><img loading="lazy" draggable="false" src="${thumb(it, 300)}" alt="">
+      <span class="badge">${idx + 1}</span>${mode === "cut" ? '<span class="check">✓</span>' : ""}
+      ${it.rot ? `<span class="rotmark">↻ ${it.rot}°</span>` : ""}
+      <button class="zoom" data-a="zoom" title="Xem to"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/></svg></button></div>${acts}`;
+    d.onclick = e => {
+      const a = e.target.closest("[data-a]");
+      if (a) { e.stopPropagation(); return act(a.dataset.a, idx); }
+      if (mode === "cut") { it.sel = !it.sel; d.classList.toggle("sel", it.sel); updateCutInfo(); }
+    };
+    grid.appendChild(d);
+  });
+  $("#tOther").onclick = () => pickFile();
+  if (mode === "cut") {
+    $("#tAll").onclick = () => { items.forEach(i => i.sel = true); render(); };
+    $("#tNone").onclick = () => { items.forEach(i => i.sel = false); render(); };
+    const doRange = () => {
+      const r = parseRange($("#rangeIn").value, items.length);
+      if (!r) return dialog("Gõ chưa đúng", ["Ví dụ đúng: 1-3, 5, 8-10"], true);
+      items.forEach((i, k) => i.sel = r.has(k)); render();
+    };
+    $("#tRange").onclick = doRange;
+    $("#rangeIn").onkeydown = e => { if (e.key === "Enter") doRange(); };
+  }
+  if (mode === "rotate") { $("#rAllL").onclick = () => rotateAll(-90); $("#rAllR").onclick = () => rotateAll(90); }
+  if (mode === "edit") $("#tUndo").onclick = undo;
+}
+function updateCutInfo() { const s = items.filter(i => i.sel).length; const el = document.querySelector(".tools .info"); if (el) el.textContent = `${items.length} trang · đã chọn ${s}`; renderSaveBar(); }
+function act(a, idx) {
+  const it = items[idx];
+  if (a === "zoom") return openModal(idx);
+  if (mode === "rotate") { snap(); it.rot = ((it.rot + (a === "l" ? -90 : 90)) % 360 + 360) % 360; return render(); }
+  if (mode === "edit") {
+    snap();
+    if (a === "del") items.splice(idx, 1);
+    if (a === "back" && idx > 0) [items[idx - 1], items[idx]] = [items[idx], items[idx - 1]];
+    if (a === "fwd" && idx < items.length - 1) [items[idx + 1], items[idx]] = [items[idx], items[idx + 1]];
+    if (!items.length) { render(); return; }
+    render();
+  }
+}
+function rotateAll(d) { snap(); items.forEach(i => i.rot = ((i.rot + d) % 360 + 360) % 360); render(); }
+function parseRange(txt, max) {
+  const out = new Set();
+  for (const part of txt.split(/[,;\s]+/).filter(Boolean)) {
+    const m = part.match(/^(\d+)(?:-(\d+))?$/); if (!m) return null;
+    let a = +m[1], b = m[2] ? +m[2] : a; if (a > b) [a, b] = [b, a];
+    for (let i = a; i <= b; i++) if (i >= 1 && i <= max) out.add(i - 1);
+  }
+  return out;
+}
+
+function renderMerge(panel) {
+  panel.innerHTML = `<div class="tools"><button class="btn green" id="mAdd">＋ Thêm file nữa</button>
+    <span class="info">${order.length} file · ${items.length} trang</span></div><div class="rows" id="rows"></div>`;
+  const rows = $("#rows");
+  order.forEach((fid, i) => {
+    const f = files[fid];
+    const r = document.createElement("div"); r.className = "row";
+    r.innerHTML = `<div class="n">${i + 1}</div><div class="th"><img loading="lazy" src="/api/thumb/${fid}/0?w=140&r=0&t=${TOKEN}" alt=""></div>
+      <div class="nm"><b title="${esc(f.name)}">${esc(f.name)}</b><span>${f.pages} trang</span></div>
+      <div class="go"><button class="btn sm" data-a="up" ${i === 0 ? "disabled" : ""} title="Lên trên">▲</button>
+      <button class="btn sm" data-a="down" ${i === order.length - 1 ? "disabled" : ""} title="Xuống dưới">▼</button>
+      <button class="btn sm" data-a="rm" title="Bỏ file này">✕ Bỏ</button></div>`;
+    r.onclick = e => {
+      const a = e.target.closest("[data-a]"); if (!a) return;
+      snap();
+      if (a.dataset.a === "up") [order[i - 1], order[i]] = [order[i], order[i - 1]];
+      if (a.dataset.a === "down") [order[i + 1], order[i]] = [order[i], order[i + 1]];
+      if (a.dataset.a === "rm") { order.splice(i, 1); items = items.filter(x => x.file !== fid); }
+      render();
+    };
+    rows.appendChild(r);
+  });
+  $("#mAdd").onclick = () => pickFile();
+}
+
+
+/* ---------- Nén nhỏ file ---------- */
+function renderCompress(panel) {
+  const f = files[order[0]];
+  const lv = [
+    ["nhe", "🍃 Nhẹ","Giữ nguyên chất lượng. Chỉ gọn lại bên trong nên giảm ít (file đã gọn rồi thì gần như không giảm)."],
+    ["vua", "👍 Vừa", "Ảnh nhỏ lại, nhìn bằng mắt vẫn rõ, in vẫn đẹp. Giảm nhiều. Hợp nhất cho đa số file.", "Khuyên dùng"],
+    ["manh", "💪 Mạnh", "Nhỏ nhất. Ảnh hơi mờ nếu phóng to. Hợp để gửi nhanh qua Zalo, email."],
+  ];
+  panel.innerHTML = `<div class="rows" style="margin-bottom:18px"><div class="row"><div class="th"><img src="/api/thumb/${f.id}/0?w=140&r=0&t=${TOKEN}" alt=""></div>
+      <div class="nm"><b>${esc(f.name)}</b><span>${f.pages} trang · hiện nặng <b>${fmtSize(f.size)}</b></span></div>
+      <button class="btn sm" id="tOther">＋ Chọn file khác</button></div></div>
+    <div class="opts">${lv.map(([k, n, d, tag]) => `<button class="opt ${opt.level === k ? "on" : ""}" data-lv="${k}"><h3>${n}${tag ? ` <em>${tag}</em>` : ""}</h3><p>${d}</p></button>`).join("")}</div>`;
+  panel.querySelectorAll("[data-lv]").forEach(b => b.onclick = () => { opt.level = b.dataset.lv; render(); });
+  $("#tOther").onclick = () => pickFile();
+}
+async function doCompress() {
+  const name = ($("#outname").value || "").trim();
+  busy("Đang nén nhỏ file… (file nặng có thể mất vài chục giây)", 60);
+  try {
+    const r = await post("/api/compress", { file: order[0], level: opt.level, name });
+    hideDialog();
+    if (!r.kept) { dialog("File này đã gọn rồi", [`Nén mức ${{ nhe: "Nhẹ", vua: "Vừa", manh: "Mạnh" }[opt.level]} không làm nhỏ thêm được (${fmtSize(r.before)} → ${fmtSize(r.after)}).`, opt.level !== "manh" ? "Anh thử mức nén mạnh hơn nhé." : "Em không lưu file mới."], false); return; }
+    showDone(r);
+  } catch (e) { dialog("Chưa nén được", [e.message], true); }
+}
+
+/* ---------- Đánh số trang ---------- */
+function renderNumber(panel) {
+  const f = files[order[0]], first = Math.max(1, Math.min(f.pages, +opt.from || 1));
+  const POS = [["tl", "Trên trái"], ["tc", "Trên giữa"], ["tr", "Trên phải"], ["bl", "Dưới trái"], ["bc", "Dưới giữa"], ["br", "Dưới phải"]];
+  const STY = [["n", "3"], ["trang", "Trang 3"], ["n_tong", "3/10"], ["gach", "- 3 -"]];
+  const SZ = [["Nhỏ", 9], ["Vừa", 11], ["Lớn", 15]];
+  panel.innerHTML = `<div class="numwrap"><div class="numopts">
+      <div class="lab">1. Đặt số ở đâu?</div><div class="posgrid">${POS.map(([k, n]) => `<button class="chip ${opt.pos === k ? "on" : ""}" data-pos="${k}">${n}</button>`).join("")}</div>
+      <div class="lab">2. Kiểu số</div><div class="chips">${STY.map(([k, n]) => `<button class="chip ${opt.style === k ? "on" : ""}" data-sty="${k}">${n}</button>`).join("")}</div>
+      <div class="lab">3. Cỡ chữ</div><div class="chips">${SZ.map(([n, v]) => `<button class="chip ${opt.size === v ? "on" : ""}" data-sz="${v}">${n}</button>`).join("")}</div>
+      <div class="lab">4. Bắt đầu</div>
+      <div class="two"><label>Đánh từ trang thứ<input type="text" id="oFrom" value="${opt.from}" size="4"></label><label>Số đầu tiên là<input type="text" id="oStart" value="${opt.start}" size="4"></label></div>
+      <div class="help">Ví dụ trang bìa không cần số: gõ <b>2</b> ở ô "Đánh từ trang thứ". <button class="btn sm" id="tOther" style="margin-left:6px">＋ Chọn file khác</button></div>
+    </div><div class="numprev"><div class="lab">Xem trước (trang ${first})</div><div class="prevbox" id="prevbox"><img src="/api/thumb/${f.id}/${first - 1}?w=520&r=0&t=${TOKEN}" alt=""><span id="prevnum"></span></div></div></div>`;
+  panel.querySelectorAll("[data-pos]").forEach(b => b.onclick = () => { opt.pos = b.dataset.pos; render(); });
+  panel.querySelectorAll("[data-sty]").forEach(b => b.onclick = () => { opt.style = b.dataset.sty; render(); });
+  panel.querySelectorAll("[data-sz]").forEach(b => b.onclick = () => { opt.size = +b.dataset.sz; render(); });
+  const upd = () => { opt.from = $("#oFrom").value; opt.start = $("#oStart").value; drawPreview(); };
+  $("#oFrom").oninput = upd; $("#oStart").oninput = upd;
+  $("#oFrom").onchange = () => render(); $("#oStart").onchange = () => render();
+  $("#tOther").onclick = () => pickFile();
+  drawPreview();
+}
+function drawPreview() {
+  const f = files[order[0]], el = $("#prevnum"), box = $("#prevbox"); if (!el || !box) return;
+  const first = Math.max(1, Math.min(f.pages, +opt.from || 1)), st = parseInt(opt.start) || 1;
+  const text = { n: `${st}`, trang: `Trang ${st}`, n_tong: `${st}/${st + f.pages - first}`, gach: `- ${st} -` }[opt.style];
+  const pw = f.sizes[first - 1][0], ph = f.sizes[first - 1][1];
+  const scale = box.clientWidth / pw;
+  el.textContent = text; el.style.fontSize = Math.max(8, opt.size * scale) + "px";
+  const m = 30 * scale;
+  el.style.left = el.style.right = el.style.top = el.style.bottom = "auto";
+  if (opt.pos[0] === "b") el.style.bottom = m - opt.size * scale * 0.25 + "px"; else el.style.top = m - opt.size * scale * 0.1 + "px";
+  if (opt.pos[1] === "l") el.style.left = m + "px"; else if (opt.pos[1] === "r") el.style.right = m + "px"; else { el.style.left = "50%"; el.style.transform = "translateX(-50%)"; }
+  if (opt.pos[1] !== "c") el.style.transform = "none";
+}
+async function doNumber() {
+  const name = ($("#outname").value || "").trim();
+  const from = parseInt(opt.from) || 1, start = parseInt(opt.start);
+  if (isNaN(start)) return dialog("Số đầu tiên chưa đúng", ["Anh gõ một con số, ví dụ 1."], true);
+  busy("Đang đánh số trang…", 60);
+  try { const r = await post("/api/number", { file: order[0], pos: opt.pos, style: opt.style, start, from, size: opt.size, name }); hideDialog(); showDone(r); }
+  catch (e) { dialog("Chưa lưu được", [e.message], true); }
+}
+
+
+/* ---------- Rút ảnh ra ---------- */
+const freshImg = () => ({ list: [], sel: new Set(), tab: "in", fmt: "goc", pfmt: "png", dpi: 150, small: false });
+let imgInfo = freshImg(), cleanInfo = null;
+let cleanSel = { annot: new Set(), texts: new Set(), images: new Set(), layers: new Set(), wm: false };
+async function loadImages() {
+  const r = await api(`/api/images/scan?file=${order[0]}`);
+  imgInfo.list = r.images;
+  imgInfo.sel = new Set(r.images.filter(e => !e.small).map(e => e.xref));
+  imgInfo.tab = r.images.some(e => !e.small) ? "in" : "page";
+  items.forEach(i => i.sel = true);
+}
+function renderImages(panel) {
+  const I = imgInfo;
+  const big = I.list.filter(e => !e.small), vis = I.list.filter(e => I.small || !e.small);
+  const chip = (cur, val, label, attr) => `<button class="chip ${cur === val ? "on" : ""}" ${attr}="${val}">${label}</button>`;
+  const seg = `<div class="seg"><button class="chip ${I.tab === "in" ? "on" : ""}" data-tab="in">🖼 Hình nằm trong file (${big.length})</button><button class="chip ${I.tab === "page" ? "on" : ""}" data-tab="page">📄 Chụp cả trang thành ảnh</button></div>`;
+  let tools = "", grid = "";
+  if (I.tab === "in") {
+    tools = `<button class="btn" id="iAll">Chọn tất cả</button><button class="btn" id="iNone">Bỏ chọn</button>
+      <label class="chk"><input type="checkbox" id="iSmall" ${I.small ? "checked" : ""}> Hiện cả hình nhỏ (biểu tượng)</label>
+      <span class="lab2">Lưu dạng:</span>${chip(I.fmt, "goc", "Giữ nguyên gốc", "data-fmt")}${chip(I.fmt, "png", "PNG", "data-fmt")}${chip(I.fmt, "jpg", "JPG", "data-fmt")}`;
+    grid = vis.length ? vis.map(e => `<div class="card pickable ${I.sel.has(e.xref) ? "sel" : ""}" data-x="${e.xref}"><div class="tw checker"><img loading="lazy" src="/api/img/${order[0]}/${e.xref}?w=300&t=${TOKEN}" onerror="this.replaceWith(document.createTextNode('Không xem trước được'))" alt=""><span class="check">✓</span></div><div class="cap">${e.w}×${e.h} · trang ${e.pages.slice(0, 4).join(", ")}${e.pages.length > 4 ? "…" : ""}</div></div>`).join("")
+      : `<div class="empty-note">File này không có hình ảnh nằm bên trong (có thể chỉ có chữ, hoặc hình là nét vẽ như biểu đồ). Anh thử mục <b>Chụp cả trang thành ảnh</b> nhé.</div>`;
+  } else {
+    tools = `<button class="btn" id="pAll">Chọn tất cả</button><button class="btn" id="pNone">Bỏ chọn</button>
+      <span class="lab2">Độ nét:</span>${chip(I.dpi, 150, "Vừa", "data-dpi")}${chip(I.dpi, 220, "Nét", "data-dpi")}${chip(I.dpi, 300, "Rất nét", "data-dpi")}
+      <span class="lab2">Dạng:</span>${chip(I.pfmt, "png", "PNG", "data-pf")}${chip(I.pfmt, "jpg", "JPG", "data-pf")}`;
+    grid = items.map((it, idx) => `<div class="card pickable ${it.sel ? "sel" : ""}" data-p="${idx}"><div class="tw"><img loading="lazy" src="${thumb(it, 300)}" alt=""><span class="badge">${idx + 1}</span><span class="check">✓</span></div></div>`).join("");
+  }
+  panel.innerHTML = `${seg}<div class="tools" style="margin-top:14px">${tools}<span class="info" id="iInfo"></span></div><div class="grid" id="grid">${grid}</div>
+    <div class="tools" style="margin:14px 0 0"><button class="btn sm" id="tOther">＋ Chọn file khác</button></div>`;
+  const upd = () => { const el = $("#iInfo"); if (el) el.textContent = I.tab === "in" ? `đã chọn ${I.sel.size}/${vis.length} hình` : `đã chọn ${items.filter(i => i.sel).length}/${items.length} trang`; renderSaveBar(); };
+  panel.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { I.tab = b.dataset.tab; const o = $("#outname"); if (o) o.value = ""; render(); });
+  panel.querySelectorAll("[data-fmt]").forEach(b => b.onclick = () => { I.fmt = b.dataset.fmt; render(); });
+  panel.querySelectorAll("[data-dpi]").forEach(b => b.onclick = () => { I.dpi = +b.dataset.dpi; render(); });
+  panel.querySelectorAll("[data-pf]").forEach(b => b.onclick = () => { I.pfmt = b.dataset.pf; render(); });
+  panel.querySelectorAll("[data-x]").forEach(c => c.onclick = () => { const x = +c.dataset.x; I.sel.has(x) ? I.sel.delete(x) : I.sel.add(x); c.classList.toggle("sel"); upd(); });
+  panel.querySelectorAll("[data-p]").forEach(c => c.onclick = () => { const it = items[+c.dataset.p]; it.sel = !it.sel; c.classList.toggle("sel", it.sel); upd(); });
+  if ($("#iAll")) { $("#iAll").onclick = () => { I.sel = new Set(vis.map(e => e.xref)); render(); }; $("#iNone").onclick = () => { I.sel = new Set(); render(); }; $("#iSmall").onchange = e => { I.small = e.target.checked; render(); }; }
+  if ($("#pAll")) { $("#pAll").onclick = () => { items.forEach(i => i.sel = true); render(); }; $("#pNone").onclick = () => { items.forEach(i => i.sel = false); render(); }; }
+  $("#tOther").onclick = () => pickFile();
+  upd();
+}
+async function doImages() {
+  const I = imgInfo, name = ($("#outname").value || "").trim();
+  busy("Đang lưu ảnh…", 60);
+  try {
+    const r = I.tab === "in"
+      ? await post("/api/images/extract", { file: order[0], xrefs: [...I.sel], format: I.fmt, name })
+      : await post("/api/pages/render", { file: order[0], pages: items.filter(i => i.sel).map(i => i.page + 1), dpi: I.dpi, format: I.pfmt, name });
+    hideDialog(); showDone(r);
+  } catch (e) { dialog("Chưa lưu được", [e.message], true); }
+}
+
+/* ---------- Xóa ghi chú & hình mờ ---------- */
+async function loadClean() {
+  const r = await api(`/api/clean/scan?file=${order[0]}`);
+  cleanInfo = r;
+  cleanSel = { annot: new Set(r.annots.map(a => a.type)), texts: new Set(r.texts.map(t => t.key)), images: new Set(r.images.filter(i => i.likely).map(i => i.xref)), layers: new Set(r.layers.map(l => l.xref)), wm: r.watermark_annots > 0 };
+}
+function cleanCount() { return cleanSel.annot.size + cleanSel.texts.size + cleanSel.images.size + cleanSel.layers.size + (cleanSel.wm ? 1 : 0); }
+function cleanBody() {
+  return { file: order[0], annot_types: [...cleanSel.annot], watermark_annots: cleanSel.wm, texts: [...cleanSel.texts], images: [...cleanSel.images], layers: [...cleanSel.layers] };
+}
+function renderClean(panel) {
+  const c = cleanInfo, f = files[order[0]];
+  const totalAn = c.annots.reduce((s, a) => s + a.count, 0);
+  const anHtml = c.annots.length
+    ? `<div class="chips">${c.annots.map(a => `<button class="chip ${cleanSel.annot.has(a.type) ? "on" : ""}" data-an="${a.type}">${esc(a.label)} (${a.count})</button>`).join("")}</div><div class="help">Bấm vào từng loại để bật/tắt. Màu xanh = sẽ gỡ.</div>`
+    : `<p class="none">Không thấy ghi chú hay nét tô sáng nào.</p>`;
+  const rows = [];
+  c.texts.forEach(t => rows.push(`<label class="wmrow"><input type="checkbox" data-tx="${esc(t.key)}" ${cleanSel.texts.has(t.key) ? "checked" : ""}><span><b>“${esc(t.text)}”</b> — chữ mờ lặp ở ${t.pages}/${t.of} trang${t.rotated ? ", nằm chéo" : ""}${t.light ? ", màu nhạt" : ""}</span></label>`));
+  c.images.forEach(i => rows.push(`<label class="wmrow"><input type="checkbox" data-im="${i.xref}" ${cleanSel.images.has(i.xref) ? "checked" : ""}><img class="wmth checker" src="/api/img/${order[0]}/${i.xref}?w=120&t=${TOKEN}" alt=""><span><b>Hình lặp ở ${i.pages} trang</b>${i.alpha ? ", trong suốt" : ""}${i.likely ? " — nhiều khả năng là hình mờ" : " — có thể là logo đầu trang, anh xem kỹ trước khi gỡ"}</span></label>`));
+  c.layers.forEach(l => rows.push(`<label class="wmrow"><input type="checkbox" data-ly="${l.xref}" ${cleanSel.layers.has(l.xref) ? "checked" : ""}><span><b>Lớp “${esc(l.name)}”</b> — lớp ẩn/hiện do phần mềm soạn thảo tạo (sẽ tắt lớp này)</span></label>`));
+  if (c.watermark_annots) rows.push(`<label class="wmrow"><input type="checkbox" data-wm ${cleanSel.wm ? "checked" : ""}><span><b>Dấu Watermark của trình soạn thảo</b> (${c.watermark_annots})</span></label>`);
+  const wmHtml = rows.length ? rows.join("") : `<p class="none">Không thấy hình mờ nào ở dạng tách riêng. Nếu hình mờ đã in dính vào ảnh quét hoặc ảnh nền thì không xóa sạch được.</p>`;
+  panel.innerHTML = `<div class="rows" style="margin-bottom:16px"><div class="row"><div class="th"><img src="/api/thumb/${f.id}/0?w=140&r=0&t=${TOKEN}" alt=""></div>
+      <div class="nm"><b>${esc(f.name)}</b><span>${f.pages} trang</span></div><button class="btn sm" id="tOther">＋ Chọn file khác</button></div></div>
+    <div class="sec"><h3>✏ Ghi chú &amp; tô sáng <em>${totalAn}</em></h3>${anHtml}</div>
+    <div class="sec"><h3>💧 Hình mờ, chữ mờ, lớp watermark <em>${rows.length}</em></h3>${wmHtml}</div>
+    <div class="tools" style="margin:16px 0 0"><button class="btn green" id="cPrev">👁 Xem thử trước / sau</button><label class="chk">trang <input type="text" id="cPage" value="1" size="3"></label><span class="info">File gốc không bị sửa, kết quả là file mới.</span></div>`;
+  panel.querySelectorAll("[data-an]").forEach(b => b.onclick = () => { const k = b.dataset.an; cleanSel.annot.has(k) ? cleanSel.annot.delete(k) : cleanSel.annot.add(k); b.classList.toggle("on", cleanSel.annot.has(k)); renderSaveBar(); });
+  const tog = (sel, set, conv) => panel.querySelectorAll(sel).forEach(i => i.onchange = () => { const k = conv(i); i.checked ? set.add(k) : set.delete(k); renderSaveBar(); });
+  tog("[data-tx]", cleanSel.texts, i => i.dataset.tx);
+  tog("[data-im]", cleanSel.images, i => +i.dataset.im);
+  tog("[data-ly]", cleanSel.layers, i => +i.dataset.ly);
+  const wm = panel.querySelector("[data-wm]"); if (wm) wm.onchange = () => { cleanSel.wm = wm.checked; renderSaveBar(); };
+  $("#cPrev").onclick = previewClean;
+  $("#tOther").onclick = () => pickFile();
+}
+async function previewClean() {
+  if (!cleanCount()) return dialog("Chưa chọn gì để gỡ", ["Anh tick ít nhất một thứ ở trên rồi bấm Xem thử."], false);
+  const pg = Math.max(1, Math.min(files[order[0]].pages, parseInt($("#cPage").value) || 1));
+  busy("Teemo đang thử dọn…", 60);
+  try {
+    const r = await post("/api/clean/preview", Object.assign(cleanBody(), { page: pg }));
+    hideDialog();
+    let ov = document.getElementById("cmp"); if (ov) ov.remove();
+    ov = document.createElement("div"); ov.id = "cmp"; ov.className = "cmp";
+    ov.innerHTML = `<div class="cmpin"><div><div class="mcap">TRƯỚC (trang ${r.page})</div><img src="/api/thumb/${order[0]}/${r.page - 1}?w=900&r=0&t=${TOKEN}" alt=""></div>
+      <div><div class="mcap">SAU khi dọn</div><img src="${r.after}" alt=""></div></div><div class="mcap">Bấm ra ngoài hoặc phím Esc để đóng</div>`;
+    ov.onclick = () => ov.remove();
+    document.body.appendChild(ov);
+  } catch (e) { dialog("Chưa xem thử được", [e.message], true); }
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.getElementById("cmp")?.remove(); });
+async function doClean() {
+  const name = ($("#outname").value || "").trim();
+  busy("Đang dọn file…", 60);
+  try {
+    const r = await post("/api/clean/apply", Object.assign(cleanBody(), { name }));
+    hideDialog();
+    if (!r.kept) return dialog("Không có gì để gỡ", ["Những thứ anh chọn không còn trong file nên em không lưu file mới."], false);
+    showDone(r);
+  } catch (e) { dialog("Chưa dọn được", [e.message], true); }
+}
+
+/* ---------- Chuyển sang Word + soát lỗi hai bên ---------- */
+const freshWord = () => ({ phase: "ready", job: null, pages: null, page: 0, edits: {}, ok: new Set(), onlyBad: false, kind: null, note: "", timer: null });
+let wordInfo = freshWord();
+function wordSay() {
+  const W = wordInfo;
+  if (W.phase === "ready") return "Teemo sẽ <b>đọc chữ</b> trong file rồi dựng thành file Word. File quét mất khoảng <b>15 giây một trang</b>. Anh bấm nút cam để bắt đầu.";
+  if (W.phase === "running") return "Teemo đang đọc chữ, anh cứ để app mở nhé. Đọc xong sẽ có màn <b>soát lỗi hai bên</b>.";
+  if (W.kind === "scan") return "Bên trái là <b>trang gốc</b>, bên phải là <b>chữ máy đọc</b>. Dòng <b>tô vàng</b> là chỗ máy chưa chắc: anh liếc rồi sửa. Xong thì bấm nút cam để lưu.";
+  return "File này có chữ thật nên đã chuyển thẳng. Anh bấm nút cam để lưu.";
+}
+function renderWord(panel) {
+  const W = wordInfo, f = files[order[0]];
+  if (W.phase === "ready") {
+    panel.innerHTML = `<div class="rows"><div class="row"><div class="th"><img src="/api/thumb/${f.id}/0?w=140&r=0&t=${TOKEN}" alt=""></div>
+      <div class="nm"><b>${esc(f.name)}</b><span>${f.pages} trang · ${fmtSize(f.size)}</span></div><button class="btn sm" id="tOther">＋ Chọn file khác</button></div></div>
+      <div class="wnote"><b>Teemo làm gì?</b> Đọc chữ trong ảnh bằng công cụ chạy ngay trên máy anh (không gửi file đi đâu), dựng lại <b>bảng thật</b> trong Word.
+      Chữ nào máy chưa chắc sẽ được <b>tô vàng</b>. Độ đúng khoảng <b>97–98%</b>, nên luôn có bước soát lỗi trước khi lưu. Logo, dấu mộc không đọc được sẽ bị bỏ.</div>`;
+    $("#tOther").onclick = () => pickFile();
+  } else if (W.phase === "running") {
+    panel.innerHTML = `<div class="wprog"><svg style="width:84px;height:84px"><use href="#scout"/></svg><h3 id="wTitle">Đang đọc chữ…</h3>
+      <div class="prog"><i id="wBar"></i></div><div class="sm" id="wMsg"></div></div>`;
+    wordShowProgress({ i: 0, n: 1, msg: "" });
+  } else if (W.kind !== "scan") {
+    panel.innerHTML = `<div class="wnote"><b>Chuyển xong.</b> ${esc(W.note)}</div>`;
+  } else renderReview(panel);
+}
+function wordShowProgress(s) {
+  const bar = $("#wBar"); if (!bar) return;
+  const n = s.n || 1, pct = Math.max(4, Math.round(100 * (s.i || 0) / n));
+  bar.style.width = pct + "%";
+  $("#wTitle").textContent = `Đang đọc trang ${Math.min(n, (s.i || 0) + 1)}/${n}…`;
+  $("#wMsg").textContent = s.msg || "";
+}
+async function wordStart() {
+  const W = wordInfo; W.phase = "running"; render();
+  try {
+    const r = await post("/api/word/start", { file: order[0] });
+    W.job = r.job; wordPoll(W);
+  } catch (e) { W.phase = "ready"; render(); dialog("Chưa chuyển được", [e.message], true); }
+}
+function wordPoll(W) {
+  const tick = async () => {
+    if (wordInfo !== W || mode !== "word" || view !== "work") return;
+    try {
+      const s = await api("/api/word/status?job=" + W.job);
+      if (s.status === "running") { wordShowProgress(s); W.timer = setTimeout(tick, 1200); return; }
+      if (s.status === "error") { W.phase = "ready"; render(); dialog("Chưa chuyển được", [s.error], true); return; }
+      W.kind = s.kind; W.note = s.note;
+      if (s.kind === "scan") { const rv = await api("/api/word/review?job=" + W.job); W.pages = rv.pages; W.page = 0; }
+      W.phase = "review"; render(); window.scrollTo(0, 0);
+    } catch (e) { W.phase = "ready"; render(); dialog("Chưa chuyển được", [e.message], true); }
+  };
+  tick();
+}
+function wordPending() {
+  let n = 0;
+  for (const pg of wordInfo.pages) for (const l of pg.lines) if (l.bad.length && !(l.id in wordInfo.edits) && !wordInfo.ok.has(l.id)) n++;
+  return n;
+}
+function renderReview(panel) {
+  const W = wordInfo, pg = W.pages[W.page], total = W.pages.length;
+  const state = l => (l.id in W.edits ? "edited" : (l.bad.length && !W.ok.has(l.id) ? "bad" : ""));
+  const rows = pg.lines.filter(l => !W.onlyBad || (l.bad.length || l.id in W.edits)).map(l => {
+    const st = state(l), val = l.id in W.edits ? W.edits[l.id] : l.txt;
+    const why = l.bad.length && st !== "edited" && st !== "" ? `<div class="why">Máy chưa chắc: ${l.bad.slice(0, 6).map(w => `<b>${esc(w)}</b>`).join(" ")}<button class="okb" data-ok="${l.id}">✓ Đúng rồi</button></div>` : (st === "edited" ? `<div class="why">✏ Anh đã sửa dòng này <button class="okb" data-undo="${l.id}">↶ Trả lại như máy đọc</button></div>` : "");
+    return `<div class="rvrow ${st}" data-row="${l.id}"><textarea rows="${Math.max(1, Math.min(5, Math.ceil(val.length / 44)))}" data-id="${l.id}">${esc(val)}</textarea>${why}</div>`;
+  }).join("") || `<div style="padding:18px;color:var(--muted)">Trang này không có dòng nào cần soát. 🎉</div>`;
+  const boxes = pg.lines.map(l => `<i class="rvbox ${state(l)}" data-box="${l.id}" style="left:${(100 * l.x / pg.w).toFixed(2)}%;top:${(100 * l.y / pg.h).toFixed(2)}%;width:${(100 * l.w / pg.w).toFixed(2)}%;height:${(100 * l.h / pg.h).toFixed(2)}%"></i>`).join("");
+  panel.innerHTML = `<div class="rvhead"><button class="btn sm" id="rvPrev" ${W.page === 0 ? "disabled" : ""}>◀ Trang trước</button><span class="pg">Trang ${W.page + 1} / ${total}</span>
+      <button class="btn sm" id="rvNext" ${W.page >= total - 1 ? "disabled" : ""}>Trang sau ▶</button>
+      <label class="chk"><input type="checkbox" id="rvBad" ${W.onlyBad ? "checked" : ""}> Chỉ hiện dòng máy chưa chắc</label>
+      <span class="info" id="rvInfo"></span></div>
+    <div class="rvwrap"><div class="rvimg" id="rvImg"><div class="rvpage" style="aspect-ratio:${pg.w}/${pg.h}"><img src="/api/word/page/${W.job}/${pg.n}?t=${TOKEN}" alt="Trang gốc">${boxes}</div></div>
+      <div class="rvlist" id="rvList">${rows}</div></div>`;
+  const info = () => { const n = wordPending(), e = Object.keys(W.edits).length; $("#rvInfo").innerHTML = (n ? `Còn <b>${n}</b> dòng chưa soát` : "Đã soát hết các dòng nghi ngờ ✓") + (e ? ` · đã sửa ${e} dòng` : ""); };
+  info();
+  const go = d => { W.page = Math.max(0, Math.min(total - 1, W.page + d)); render(); };
+  $("#rvPrev").onclick = () => go(-1); $("#rvNext").onclick = () => go(1);
+  $("#rvBad").onchange = e => { W.onlyBad = e.target.checked; render(); };
+  const act = id => {
+    panel.querySelectorAll(".act").forEach(x => x.classList.remove("act"));
+    const b = panel.querySelector(`[data-box="${id}"]`), r = panel.querySelector(`[data-row="${id}"]`);
+    if (b) { b.classList.add("act"); const c = $("#rvImg"); c.scrollTo({ top: Math.max(0, b.offsetTop + 8 - c.clientHeight / 3), behavior: "smooth" }); }
+    if (r) r.classList.add("act");
+  };
+  const byId = {}; pg.lines.forEach(l => byId[l.id] = l);
+  panel.querySelectorAll("textarea[data-id]").forEach(t => {
+    t.onfocus = () => act(t.dataset.id);
+    t.oninput = () => {
+      const l = byId[t.dataset.id];
+      if (t.value.trim() === l.txt.trim()) delete W.edits[l.id]; else W.edits[l.id] = t.value;
+      const b = panel.querySelector(`[data-box="${l.id}"]`); if (b) b.className = "rvbox act " + state(l);
+      t.rows = Math.max(1, Math.min(5, Math.ceil(t.value.length / 44)));
+      info();
+    };
+    t.onblur = () => { const l = byId[t.dataset.id]; const row = t.closest(".rvrow"); if (row && (l.id in W.edits) !== row.classList.contains("edited")) render(); };
+  });
+  panel.querySelectorAll("[data-box]").forEach(b => b.onclick = () => { const t = panel.querySelector(`textarea[data-id="${b.dataset.box}"]`); if (t) { t.focus(); t.scrollIntoView({ block: "center", behavior: "smooth" }); } else act(b.dataset.box); });
+  panel.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => { W.ok.add(b.dataset.ok); render(); });
+  panel.querySelectorAll("[data-undo]").forEach(b => b.onclick = () => { delete W.edits[b.dataset.undo]; render(); });
+}
+async function wordSave() {
+  const W = wordInfo, name = ($("#outname").value || "").trim();
+  const n = W.kind === "scan" ? wordPending() : 0;
+  if (n && !confirm(`Còn ${n} dòng máy chưa chắc mà anh chưa soát. Vẫn lưu file Word luôn?`)) return;
+  busy("Đang dựng file Word…", 60);
+  try { const r = await post("/api/word/save", { job: W.job, edits: W.edits, name }); hideDialog(); showDone(r); }
+  catch (e) { dialog("Chưa lưu được", [e.message], true); }
+}
+
+/* ---------- thanh lưu ---------- */
+function baseName() {
+  const f = files[order[0]]; if (!f) return "ket-qua";
+  const suf = mode === "images" && imgInfo.tab === "page" ? "_trang" : MODES[mode].suffix;
+  return f.name.replace(/\.pdf$/i, "") + suf;
+}
+function renderSaveBar() {
+  const bar = $("#savebar"), inn = $("#saveIn");
+  bar.classList.remove("hidden");
+  const keep = $("#outname") ? $("#outname").value : null;
+  const sel = items.filter(i => i.sel).length;
+  const label = { cut: `💾 Lưu ${sel} trang đã chọn`, merge: `🔗 Nối ${order.length} file thành 1`, rotate: "💾 Lưu file đã xoay", edit: "💾 Lưu file đã chỉnh", compress: "📦 Nén nhỏ file", number: "🔢 Đánh số và lưu",
+    images: imgInfo.tab === "in" ? `🖼 Lưu ${imgInfo.sel.size} ảnh` : `🖼 Chụp ${sel} trang thành ảnh`, clean: "🧹 Dọn và lưu", word: wordInfo.phase === "review" ? "💾 Lưu file Word" : "📝 Bắt đầu chuyển sang Word" }[mode];
+  const disabled = mode === "cut" ? sel === 0 : mode === "images" ? (imgInfo.tab === "in" ? imgInfo.sel.size === 0 : sel === 0) : mode === "clean" ? (!cleanInfo || cleanCount() === 0) : mode === "word" ? wordInfo.phase === "running" : items.length === 0;
+  inn.innerHTML = `<label for="outname">Tên file kết quả</label><input type="text" id="outname">
+    <span class="grow"></span>
+    ${mode === "cut" ? `<button class="btn" id="saveEach" title="Mỗi trang (đã chọn, hoặc tất cả nếu chưa chọn) thành một file riêng">📑 Tách mỗi trang 1 file</button>` : ""}
+    <button class="btn primary" id="saveMain" ${disabled ? "disabled" : ""}>${label}</button>
+    ${mode === "cut" && sel === 0 ? `<span class="hintline">Anh bấm chọn ít nhất 1 trang ở trên thì nút cam mới sáng lên.</span>` : ""}`;
+  $("#outname").value = keep || baseName();
+  $("#saveMain").onclick = () => save(false);
+  if ($("#saveEach")) $("#saveEach").onclick = () => save(true);
+}
+const payload = list => list.map(i => ({ file: i.file, page: i.page, rot: i.rot }));
+async function save(each) {
+  if (mode === "compress") return doCompress();
+  if (mode === "number") return doNumber();
+  if (mode === "images") return doImages();
+  if (mode === "clean") return doClean();
+  if (mode === "word") return wordInfo.phase === "review" ? wordSave() : wordStart();
+  const name = ($("#outname").value || "ket-qua").trim();
+  let outputs;
+  if (each) {
+    const src = items.some(i => i.sel) ? items.filter(i => i.sel) : items;
+    const w = String(src.length).length;
+    outputs = src.map((it, k) => ({ name: `${name}_trang-${String(k + 1).padStart(w, "0")}`, items: payload([it]) }));
+  } else if (mode === "cut") outputs = [{ name, items: payload(items.filter(i => i.sel)) }];
+  else if (mode === "merge") outputs = [{ name, items: payload(order.flatMap(fid => items.filter(i => i.file === fid))) }];
+  else outputs = [{ name, items: payload(items) }];
+  busy(outputs.length > 1 ? `Đang tách ${outputs.length} file…` : "Đang lưu…", 55);
+  try {
+    const r = await post("/api/export", { outputs });
+    hideDialog(); showDone(r);
+  } catch (e) { dialog("Chưa lưu được", [e.message], true); }
+}
+function showDone(r) {
+  showView("done");
+  const f = r.files || [], im = r.images;
+  const nenInfo = r.before ? `<div class="bigsave">${fmtSize(r.before)} <span>➜</span> <b>${fmtSize(r.after)}</b> <em>nhẹ hơn ${Math.round((1 - r.after / r.before) * 100)}%</em></div>` : "";
+  const remInfo = r.removed ? `<div class="bigsave" style="font-size:23px">${[["annots", "ghi chú / nét tô"], ["text", "mảnh chữ mờ"], ["images", "hình mờ"], ["layers", "lớp watermark"]].filter(([k]) => r.removed[k]).map(([k, n]) => `<b>${r.removed[k]}</b> ${n}`).join(" · ")} <em>đã gỡ</em></div>` : "";
+  const folderName = im ? im.folder.split(/[\\/]/).pop() : "";
+  const head = im ? `<div>Đã lưu <b>${im.count}</b> ảnh vào thư mục <b>${esc(folderName)}</b> (trong <b>PDF-ket-qua</b> trên Desktop).</div>` : `<div>Đã lưu ${f.length} file vào thư mục <b>PDF-ket-qua</b> trên Desktop.</div>`;
+  const list = im ? `<ul>${im.names.slice(0, 6).map(n => `<li>🖼 ${esc(n)}</li>`).join("")}${im.count > 6 ? `<li>… và ${im.count - 6} ảnh nữa</li>` : ""}</ul>`
+    : `<ul>${f.slice(0, 6).map(x => `<li>📄 ${esc(x.name)} — ${x.pages} trang, ${fmtSize(x.size)}</li>`).join("")}${f.length > 6 ? `<li>… và ${f.length - 6} file nữa</li>` : ""}</ul>`;
+  const first = im ? `<button class="btn primary" id="dImgs">📁 Mở thư mục ảnh</button>` : (f.length === 1 ? `<button class="btn primary" id="dOpen">Mở file</button>` : "");
+  $("#donePanel").innerHTML = `<svg><use href="#scout"/></svg><h2>Xong rồi! 🎉</h2>
+    <div class="teemo-say">Teemo vừa ném nấm báo tin vui! 🍄</div>${nenInfo}${remInfo}${head}${list}
+    <div class="row2">${first}
+    <button class="btn ${first ? "" : "primary"}" id="dFolder">📁 Mở thư mục kết quả</button>
+    <button class="btn green" id="dBack">＋ Làm việc khác</button></div>`;
+  if ($("#dOpen")) $("#dOpen").onclick = () => post("/api/open", { path: f[0].path });
+  if ($("#dImgs")) $("#dImgs").onclick = () => post("/api/open", { path: im.folder });
+  $("#dFolder").onclick = () => post("/api/open", { path: null });
+  $("#dBack").onclick = goHome;
+  setTimeout(celebrate, 250);
+}
+
+/* ---------- hiệu ứng: Teemo ném nấm, nấm nổ thành pháo hoa ---------- */
+function celebrate() {
+  if (view !== "done" || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const old = document.getElementById("fx"); if (old) old.remove();
+  const cv = document.createElement("canvas"); cv.id = "fx";
+  cv.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:90";
+  document.body.appendChild(cv);
+  const dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+  const m = document.querySelector("#donePanel svg").getBoundingClientRect();
+  const sx = m.left + m.width * 0.8, sy = m.top + m.height * 0.55;                 // tay Teemo
+  const lx = Math.min(W - 90, m.left + m.width / 2 + 250), ly = m.top + m.height + 30;   // chỗ nấm rơi xuống
+  const COLORS = ["#E8943A", "#7DAA4F", "#F6EFD9", "#D9552B", "#C8372D", "#FFE9A0", "#9fd36b"];
+  const parts = [], FLY = 1000;
+  const burst = (x, y, n, power, cols, g = 0.11) => { for (let i = 0; i < n; i++) { const a = Math.random() * 6.283, v = power * (0.3 + Math.random() * 0.7); parts.push({ x, y, px: x, py: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, dec: 0.011 + Math.random() * 0.014, c: cols[(Math.random() * cols.length) | 0], r: 2 + Math.random() * 2.8, g }); } };
+  const shroom = (x, y, s, rot, a) => {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s); ctx.globalAlpha = a;
+    ctx.fillStyle = "#F6EFD9"; ctx.fillRect(-8, 0, 16, 24);
+    ctx.fillStyle = "#D9552B"; ctx.beginPath(); ctx.moveTo(-32, 4); ctx.bezierCurveTo(-34, -38, 34, -38, 32, 4); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#F6EFD9"; [[-15, -12, 5], [6, -20, 4.4], [18, -7, 3.8]].forEach(([a2, b, r]) => { ctx.beginPath(); ctx.arc(a2, b, r, 0, 7); ctx.fill(); });
+    ctx.restore();
+  };
+  const shows = [600, 1300, 1900, 2600].map(d => ({ at: FLY + d, done: false }));
+  let landed = false, ring = 0, flash = 0; const t0 = performance.now();
+  (function frame(now) {
+    if (!document.body.contains(cv)) return;
+    const t = now - t0;
+    ctx.clearRect(0, 0, W, H);
+    if (t < FLY) {                                    // nấm bay theo đường vòng cung, xoay tít
+      const p = t / FLY, e = 1 - Math.pow(1 - p, 1.6);
+      const x = sx + (lx - sx) * e, y = sy + (ly - sy) * e - Math.sin(p * Math.PI) * 230;
+      if (Math.random() < 0.8) parts.push({ x, y, px: x, py: y, vx: (Math.random() - .5) * 1.2, vy: Math.random() * 1.2, life: .8, dec: .04, c: "#FFE9A0", r: 1.8, g: 0 });
+      shroom(x, y, 0.45 + 0.55 * p, p * 12.5, 1);
+    } else {
+      if (!landed) { landed = true; ring = 1; flash = 1; burst(lx, ly, 120, 8, COLORS); burst(lx, ly, 30, 3.2, ["#F6EFD9", "#E8D9A8"], 0.02); }
+      const tl = t - FLY;
+      const a = Math.max(0, 1 - Math.max(0, tl - 450) / 650);
+      if (a > 0) shroom(lx, ly, 1 + 0.18 * Math.sin(tl / 55) * Math.exp(-tl / 260), 0, a);
+    }
+    shows.forEach(s => { if (!s.done && t > s.at) { s.done = true; const x = W * (0.12 + Math.random() * 0.76), y = H * (0.12 + Math.random() * 0.38), c = [COLORS[(Math.random() * 7) | 0], COLORS[(Math.random() * 7) | 0], "#F6EFD9"]; burst(x, y, 140, 9, c, 0.07); flash = 0.6; } });
+    if (ring > 0) { ctx.strokeStyle = `rgba(246,239,217,${ring})`; ctx.lineWidth = 4 * ring; ctx.beginPath(); ctx.arc(lx, ly, (1 - ring) * 130 + 10, 0, 6.283); ctx.stroke(); ring -= 0.04; }
+    if (flash > 0) { ctx.fillStyle = `rgba(255,240,200,${flash * 0.12})`; ctx.fillRect(0, 0, W, H); flash -= 0.05; }
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i]; p.px = p.x; p.py = p.y; p.vy += p.g; p.x += p.vx; p.y += p.vy; p.vx *= 0.985; p.life -= p.dec;
+      if (p.life <= 0) { parts.splice(i, 1); continue; }
+      ctx.globalAlpha = Math.min(1, p.life * 1.4); ctx.strokeStyle = p.c; ctx.lineWidth = p.r; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
+      ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 0.8, 0, 6.283); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (t < 5200 || parts.length) { if (t < 9000) return requestAnimationFrame(frame); }
+    cv.remove();
+  })(performance.now());
+}
+
+/* ---------- hộp thoại, xem to ---------- */
+function busy(text, pct) { const t = $("#toast"); t.className = "toast"; t.style.display = "block"; t.innerHTML = `<h3>${esc(text)}</h3><div class="prog"><i style="width:${pct}%"></i></div>`; }
+function hideDialog() { $("#toast").style.display = "none"; }
+function dialog(title, lines, isErr) {
+  const t = $("#toast"); t.className = "toast" + (isErr ? " err" : ""); t.style.display = "block";
+  t.innerHTML = `<h3>${isErr ? "⚠ " : ""}${esc(title)}</h3>${lines.length ? "<ul>" + lines.slice(0, 8).map(l => `<li>${esc(l)}</li>`).join("") + "</ul>" : ""}<div class="row3"><button class="btn primary" style="font-size:17px;padding:8px 22px" id="dlgOk">Đóng</button></div>`;
+  $("#dlgOk").onclick = hideDialog;
+}
+let modalIdx = -1;
+function openModal(idx) {
+  modalIdx = idx; const it = items[idx];
+  $("#mimg").src = `/api/thumb/${it.file}/${it.page}?w=1300&r=${it.rot}&t=${TOKEN}`;
+  $("#mcap").textContent = `Trang ${idx + 1}/${items.length}  ·  phím ← → để chuyển, Esc hoặc bấm ra ngoài để đóng`;
+  $("#modal").style.display = "flex";
+}
+const closeModal = () => { $("#modal").style.display = "none"; modalIdx = -1; };
+$("#modal").onclick = closeModal;
+document.addEventListener("keydown", e => {
+  if ($("#modal").style.display === "flex") {
+    if (e.key === "Escape") closeModal();
+    if (e.key === "ArrowRight" && modalIdx < items.length - 1) openModal(modalIdx + 1);
+    if (e.key === "ArrowLeft" && modalIdx > 0) openModal(modalIdx - 1);
+    return;
+  }
+  if (/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && (mode === "edit" || mode === "rotate" || mode === "merge")) { e.preventDefault(); undo(); }
+});
+
+/* ---------- chọn / kéo thả file từ máy ---------- */
+$("#fileInput").onchange = e => { addFiles(e.target.files); e.target.value = ""; };
+let depth = 0;
+const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes("Files");
+window.addEventListener("dragenter", e => { if (hasFiles(e) && view === "work") { depth++; document.body.classList.add("dragfile"); } });
+window.addEventListener("dragleave", e => { if (hasFiles(e) && --depth <= 0) { depth = 0; document.body.classList.remove("dragfile"); } });
+window.addEventListener("dragover", e => { if (hasFiles(e)) e.preventDefault(); });
+window.addEventListener("drop", e => { if (hasFiles(e)) { e.preventDefault(); depth = 0; document.body.classList.remove("dragfile"); addFiles(e.dataTransfer.files); } });
+
+/* ---------- giữ app sống ---------- */
+async function ping() { try { await api("/api/ping"); $("#banner").style.display = "none"; } catch (e) { $("#banner").style.display = "block"; } }
+ping(); setInterval(ping, 15000);
+window.__test = { celebrate, opt, addFiles, enter, get items() { return items; }, get order() { return order; }, get files() { return files; }, get mode() { return mode; }, get view() { return view; } };
+</script>
+</body>
+</html>
