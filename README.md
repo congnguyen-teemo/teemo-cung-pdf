@@ -44,3 +44,4 @@ Các việc khác (cắt, nối, nén...) không cần Tesseract.
 
 [GNU AGPL-3.0](LICENSE). Phần mềm dùng thư viện [PyMuPDF](https://pymupdf.readthedocs.io) (AGPL-3.0), [pdf2docx](https://github.com/ArtifexSoftware/pdf2docx) (MIT), OpenCV, NumPy, python-docx và công cụ [Tesseract](https://github.com/tesseract-ocr/tesseract) (Apache-2.0).
 Hình nhân vật hướng dẫn do tác giả tự vẽ bằng SVG, không dùng hình của game hay của người thật.
+Phông chữ nhúng trong giao diện: [Playfair Display](https://github.com/clauseggers/Playfair-Display) và [Be Vietnam Pro](https://github.com/bettergui/BeVietnamPro), giấy phép SIL Open Font License 1.1 (xem thư mục `giay-phep-phong`). Phông đã được cắt gọn chỉ còn chữ Latin và tiếng Việt; bản cắt gọn của Playfair Display mang tên "Teemo Serif" vì "Playfair Display" là tên giữ riêng.
